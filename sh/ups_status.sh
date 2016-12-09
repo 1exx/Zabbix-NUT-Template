@@ -1,25 +1,26 @@
 #!/bin/sh
- 
+
+upscmd="/usr/bin/env upsc"
 ups="$1"
+key="$2"
 
 if [ ${ups} = "ups.discovery" ]; then
 
     echo -n "{\"data\":["
     first=1
-    /bin/upsc -l 2>/dev/null | while read discovered ; do 
+    ${upscmd} -l 2>/dev/null | while read discovered ; do 
         if [ ${first} -eq 0 ]; then
             echo -n ","
         fi
-        echo -en "{\"{#UPSNAME}\":\"${discovered}\"}"
+        echo -n "{\"{#UPSNAME}\":\"${discovered}\"}"
         first=0
     done
     echo "]}"
 
 else
-	key="$2"
 
 	if [ ${key} = "ups.status" ]; then
-		state=`/bin/upsc ${ups} ${key} 2>/dev/null`
+		state=`${upscmd} ${ups} ${key} 2>/dev/null`
 		case ${state} in
 			OL)		echo 1 ;; #'On line (mains is present)' ;;
 			OB)		echo 2 ;; #'On battery (mains is not present)' ;;
@@ -36,7 +37,7 @@ else
 			*)		echo 0 ;; #'unknown state' ;;
 		esac
 	else
-		/bin/upsc ${ups} ${key}  2>/dev/null
+		${upscmd} ${ups} ${key} 2>/dev/null
 	fi
 
 fi
