@@ -37,7 +37,8 @@ else
 			*)		echo 0 ;; #'unknown state' ;;
 		esac
 	else
-		${upscmd} ${ups} ${key} 2>/dev/null
+		key_value=`${upscmd} ${ups} ${key} 2>/dev/null`
+		echo ${key_value:="ZBX_NOTSUPPORTED"}
 	fi
 
 fi
