@@ -1,25 +1,27 @@
 #!/bin/sh
 
-upscmd="/usr/bin/env upsc"
+upscmd="/usr/local/bin/upsc"
 ups="$1"
 key="$2"
 
-if [ ${ups} = "ups.discovery" ]; then
+if ! [ -e "$upscmd" ]; then
+	echo "upsc not found"
+	exit
+fi
 
-    echo -n "{\"data\":["
-    first=1
-    ${upscmd} -l 2>/dev/null | while read discovered ; do 
-        if [ ${first} -eq 0 ]; then
-            echo -n ","
-        fi
-        echo -n "{\"{#UPSNAME}\":\"${discovered}\"}"
-        first=0
-    done
-    echo "]}"
-
+if [ "${ups}" = "ups.discovery" ]; then
+	echo -n "{\"data\":["
+	first=1
+	${upscmd} -l 2>/dev/null | while read discovered ; do 
+		if [ "${first}" -eq 0 ]; then
+			echo -n ","
+		fi
+		echo -n "{\"{#UPSNAME}\":\"${discovered}\"}"
+		first=0
+	done
+	echo "]}"
 else
-
-	if [ ${key} = "ups.status" ]; then
+	if [ "${key}" = "ups.status" ]; then
 		state=`${upscmd} ${ups} ${key} 2>/dev/null`
 		case ${state} in
 			OL)		echo 1 ;; #'On line (mains is present)' ;;
@@ -40,6 +42,5 @@ else
 		key_value=`${upscmd} ${ups} ${key} 2>/dev/null`
 		echo ${key_value:="ZBX_NOTSUPPORTED"}
 	fi
-
 fi
 
